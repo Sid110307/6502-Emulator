@@ -1,0 +1,10 @@
+# Build
+bin/
+
+# IDE-related
+.vscode/
+.vs/
+.idea/
+
+# macOS shit
+.DS_Store
