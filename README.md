@@ -27,7 +27,6 @@
 - Configure the project using CMake (only on the first build)
   ```sh
   $ cmake -S . -B bin
-  # You can add -DPLATFORM_BIG_ENDIAN=1 if needed.
   ```
 
 - Build the project

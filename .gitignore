@@ -8,3 +8,7 @@ bin/
 
 # macOS shit
 .DS_Store
+
+# Misc
+tests/
+!tests/.gitkeep

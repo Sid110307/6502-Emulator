@@ -4,6 +4,7 @@ using byte = unsigned char;
 using word = unsigned short;
 using dword = unsigned int;
 
+// TODO: Add more instructions.
 enum class Instruction : byte
 {
 	LDA_IM = 0xA9,   // LDA Immediate
@@ -15,7 +16,6 @@ enum class Instruction : byte
 	LDA_INX = 0xA1,  // LDA Indirect X
 	LDA_INY = 0xB1,  // LDA Indirect Y
 
-// TODO: Add support for the below instructions.
 	STA_ZP = 0x85,   // STA Zero Page
 	STA_ZPX = 0x95,  // STA Zero Page X
 	STA_AB = 0x8D,   // STA Absolute
@@ -43,6 +43,8 @@ enum class Instruction : byte
 	STY_ZP = 0x84,   // STY Zero Page
 	STY_ZPX = 0x94,  // STY Zero Page X
 	STY_AB = 0x8C,   // STY Absolute
+
+	// TODO: TAX, TAY, TXA, TYA.
 
 	ADC_IM = 0x69,   // ADC Immediate
 	ADC_ZP = 0x65,   // ADC Zero Page
@@ -143,8 +145,10 @@ enum class Instruction : byte
 	CPY_ZP = 0xC4,   // CPY Zero Page
 	CPY_AB = 0xCC,   // CPY Absolute
 
-	DEC_ACC = 0x3A,  // DEC Accumulator
-	INC_ACC = 0x1A,  // INC Accumulator
+	INX = 0xE8,  // INC X
+	INY = 0xC8,  // INC Y
+	DEX = 0xCA,  // DEC X
+	DEY = 0x88,  // DEC Y
 
 	CLC = 0x18,      // CLear Carry
 	SEC = 0x38,      // SEt Carry
@@ -168,13 +172,13 @@ enum class Instruction : byte
 	JSR = 0x20,      // Jump to SubRoutine
 	RTS = 0x60,      // ReTurn from Subroutine
 
+	// TODO: TSX, TXS.
 	PHA = 0x48,      // PusH Accumulator
 	PLA = 0x68,      // PuLl Accumulator
 	PHP = 0x08,      // PusH Processor status
 	PLP = 0x28,      // PuLl Processor status
 
 	BRK = 0x00,      // BReaK
-	RTI = 0x40,      // ReTurn from Interrupt
-
 	NOP = 0xEA,      // No OPeration
+	RTI = 0x40,      // ReTurn from Interrupt
 };

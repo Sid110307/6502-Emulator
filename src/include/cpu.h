@@ -32,5 +32,19 @@ private:
 	byte V: 1; // Overflow Flag
 	byte N: 1; // Negative Flag
 
-	void setStatusFlags();
+	void LDA(byte);
+	void LDX();
+	void ADC(byte);
+	void SBC(byte);
+	void AND(byte);
+	void ORA(byte);
+	void EOR(byte);
+	void BIT(byte);
+	void ASL(byte &);
+	void LSR(byte &);
+	void ROL(byte &);
+	void ROR(byte &);
+	void INC(byte &);
+	void DEC(byte &);
+	void CMP(byte, byte);
 };

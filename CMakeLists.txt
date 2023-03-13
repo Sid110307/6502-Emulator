@@ -14,5 +14,3 @@ add_executable(6502
         ${PROJECT_SOURCE_DIR}/include/cpu.h
         ${PROJECT_SOURCE_DIR}/include/memory.h
         ${PROJECT_SOURCE_DIR}/include/utils.h)
-
-target_compile_definitions(6502 PRIVATE -DPLATFORM_BIG_ENDIAN=${PLATFORM_BIG_ENDIAN})
