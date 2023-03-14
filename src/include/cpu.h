@@ -8,14 +8,19 @@
 class CPU
 {
 public:
-	void reset(Memory &);
-	void execute(dword, Memory &);
+	CPU(Memory &);
+	~CPU() = default;
 
-	byte fetchByte(dword &, Memory &);
-	word fetchWord(dword &, Memory &);
-	static byte readByte(dword &, byte, Memory &);
+	void reset();
+	void execute(dword);
+
+	byte fetchByte(dword &);
+	word fetchWord(dword &);
+	byte readByte(dword &, byte);
 
 private:
+	Memory memory;
+
 	word PC; // Program Counter
 	byte SP; // Stack Pointer
 

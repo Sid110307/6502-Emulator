@@ -9,9 +9,7 @@
 int main()
 {
 	Memory memory = Memory();
-
-	CPU cpu = CPU();
-	cpu.reset(memory);
+	CPU cpu = CPU(memory);
 
 	// BEGIN Code
 	// Convert an 16 bit binary value into a 24 bit BCD value: http://6502.org/users/obelisk/6502/algorithms.html
@@ -54,6 +52,6 @@ int main()
 	memory[0x0020] = (byte) Instruction::CLD;
 	// END Code
 
-	cpu.execute(49, memory);
+	cpu.execute(49);
 	return EXIT_SUCCESS;
 }

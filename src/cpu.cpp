@@ -1,6 +1,12 @@
 #include "include/cpu.h"
 
-void CPU::reset(Memory &memory)
+CPU::CPU(Memory &memory) // NOLINT (cppcoreguidelines-pro-type-member-init)
+{
+	this->memory = memory;
+	reset();
+}
+
+void CPU::reset()
 {
 	PC = 0xFFFC;
 	SP = 0x00;
@@ -19,93 +25,93 @@ void CPU::reset(Memory &memory)
 	memory.init();
 }
 
-void CPU::execute(dword cycles, Memory &memory)
+void CPU::execute(dword cycles)
 {
 	while (cycles > 0)
 	{
-		byte opcode = fetchByte(cycles, memory);
+		byte opcode = fetchByte(cycles);
 		switch (opcode)
 		{
 //#region LDA
 			case (byte) Instruction::LDA_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 				LDA(data);
 
 				break;
 			}
 			case (byte) Instruction::LDA_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				LDA(readByte(cycles, address, memory));
+				LDA(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::LDA_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				LDA(readByte(cycles, address + X, memory));
+				LDA(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::LDA_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				cycles -= 2;
 
-				LDA(readByte(cycles, address, memory));
+				LDA(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::LDA_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				cycles -= 2;
 
-				LDA(readByte(cycles, address + X, memory));
+				LDA(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::LDA_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				cycles -= 2;
 
-				LDA(readByte(cycles, address + Y, memory));
+				LDA(readByte(cycles, address + Y));
 				break;
 			}
 			case (byte) Instruction::LDA_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address + X, memory);
-				indirectAddress |= readByte(cycles, address + X + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address + X);
+				indirectAddress |= readByte(cycles, address + X + 1) << 8;
 				cycles--;
 
-				LDA(readByte(cycles, indirectAddress, memory));
+				LDA(readByte(cycles, indirectAddress));
 				break;
 			}
 			case (byte) Instruction::LDA_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address, memory);
-				indirectAddress |= readByte(cycles, address + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address);
+				indirectAddress |= readByte(cycles, address + 1) << 8;
 				cycles--;
 
-				LDA(readByte(cycles, indirectAddress + Y, memory));
+				LDA(readByte(cycles, indirectAddress + Y));
 				break;
 			}
 //#endregion
 //#region STA
 			case (byte) Instruction::STA_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
 				memory[address] = A;
 				cycles--;
@@ -113,7 +119,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STA_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
 				memory[address + X] = A;
@@ -122,8 +128,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STA_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				memory[address] = A;
 				cycles -= 2;
@@ -131,8 +137,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STA_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				memory[address + X] = A;
 				cycles -= 2;
@@ -140,8 +146,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STA_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				memory[address + Y] = A;
 				cycles -= 2;
@@ -149,7 +155,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STA_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
 				word data = memory[address + X];
@@ -161,7 +167,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STA_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
 				word data = memory[address];
@@ -175,7 +181,7 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region LDX
 			case (byte) Instruction::LDX_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				X = data;
 				LDX();
@@ -183,26 +189,26 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::LDX_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				X = readByte(cycles, address, memory);
+				X = readByte(cycles, address);
 				LDX();
 				break;
 			}
 			case (byte) Instruction::LDX_ZPY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				X = readByte(cycles, address + Y, memory);
+				X = readByte(cycles, address + Y);
 				LDX();
 				break;
 			}
 			case (byte) Instruction::LDX_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				byte data = memory[address];
 
 				X = data;
@@ -211,8 +217,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::LDX_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				byte data = memory[address + Y];
 
 				X = data;
@@ -223,7 +229,7 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region STX
 			case (byte) Instruction::STX_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
 				memory[address] = X;
 				cycles--;
@@ -231,7 +237,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STX_ZPY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
 				memory[address + Y] = X;
@@ -240,8 +246,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STX_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				memory[address] = X;
 				cycles -= 2;
@@ -251,7 +257,7 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region LDY
 			case (byte) Instruction::LDY_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				Y = data;
 				LDX();
@@ -259,25 +265,25 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::LDY_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				Y = readByte(cycles, address, memory);
+				Y = readByte(cycles, address);
 				LDX();
 				break;
 			}
 			case (byte) Instruction::LDY_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				Y = readByte(cycles, address + X, memory);
+				Y = readByte(cycles, address + X);
 				LDX();
 				break;
 			}
 			case (byte) Instruction::LDY_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				byte data = memory[address];
 
 				Y = data;
@@ -286,8 +292,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::LDY_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 				byte data = memory[address + X];
 
 				Y = data;
@@ -298,7 +304,7 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region STY
 			case (byte) Instruction::STY_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
 				memory[address] = Y;
 				cycles--;
@@ -306,7 +312,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STY_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
 				memory[address + X] = Y;
@@ -315,8 +321,8 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::STY_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				memory[address] = Y;
 				cycles -= 2;
@@ -326,68 +332,68 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region ADC
 			case (byte) Instruction::ADC_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				ADC(data);
 				break;
 			}
 			case (byte) Instruction::ADC_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				ADC(readByte(cycles, address, memory));
+				ADC(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::ADC_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				ADC(readByte(cycles, address + X, memory));
+				ADC(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::ADC_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ADC(memory[address]);
 				break;
 			}
 			case (byte) Instruction::ADC_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ADC(memory[address + X]);
 				break;
 			}
 			case (byte) Instruction::ADC_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ADC(memory[address + Y]);
 				break;
 			}
 			case (byte) Instruction::ADC_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address + X, memory);
-				indirectAddress |= readByte(cycles, address + X + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address + X);
+				indirectAddress |= readByte(cycles, address + X + 1) << 8;
 
 				ADC(memory[indirectAddress]);
 				break;
 			}
 			case (byte) Instruction::ADC_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address, memory);
-				indirectAddress |= readByte(cycles, address + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address);
+				indirectAddress |= readByte(cycles, address + 1) << 8;
 
 				ADC(memory[indirectAddress + Y]);
 				break;
@@ -396,68 +402,68 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region SBC
 			case (byte) Instruction::SBC_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				SBC(data);
 				break;
 			}
 			case (byte) Instruction::SBC_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				SBC(readByte(cycles, address, memory));
+				SBC(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::SBC_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				SBC(readByte(cycles, address + X, memory));
+				SBC(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::SBC_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				SBC(memory[address]);
 				break;
 			}
 			case (byte) Instruction::SBC_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				SBC(memory[address + X]);
 				break;
 			}
 			case (byte) Instruction::SBC_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				SBC(memory[address + Y]);
 				break;
 			}
 			case (byte) Instruction::SBC_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address + X, memory);
-				indirectAddress |= readByte(cycles, address + X + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address + X);
+				indirectAddress |= readByte(cycles, address + X + 1) << 8;
 
 				SBC(memory[indirectAddress]);
 				break;
 			}
 			case (byte) Instruction::SBC_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address, memory);
-				indirectAddress |= readByte(cycles, address + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address);
+				indirectAddress |= readByte(cycles, address + 1) << 8;
 
 				SBC(memory[indirectAddress + Y]);
 				break;
@@ -466,68 +472,68 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region AND
 			case (byte) Instruction::AND_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				AND(data);
 				break;
 			}
 			case (byte) Instruction::AND_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				AND(readByte(cycles, address, memory));
+				AND(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::AND_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				AND(readByte(cycles, address + X, memory));
+				AND(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::AND_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				AND(memory[address]);
 				break;
 			}
 			case (byte) Instruction::AND_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				AND(memory[address + X]);
 				break;
 			}
 			case (byte) Instruction::AND_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				AND(memory[address + Y]);
 				break;
 			}
 			case (byte) Instruction::AND_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address + X, memory);
-				indirectAddress |= readByte(cycles, address + X + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address + X);
+				indirectAddress |= readByte(cycles, address + X + 1) << 8;
 
 				AND(memory[indirectAddress]);
 				break;
 			}
 			case (byte) Instruction::AND_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address, memory);
-				indirectAddress |= readByte(cycles, address + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address);
+				indirectAddress |= readByte(cycles, address + 1) << 8;
 
 				AND(memory[indirectAddress + Y]);
 				break;
@@ -536,68 +542,68 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region ORA
 			case (byte) Instruction::ORA_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				ORA(data);
 				break;
 			}
 			case (byte) Instruction::ORA_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				ORA(readByte(cycles, address, memory));
+				ORA(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::ORA_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				ORA(readByte(cycles, address + X, memory));
+				ORA(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::ORA_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ORA(memory[address]);
 				break;
 			}
 			case (byte) Instruction::ORA_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ORA(memory[address + X]);
 				break;
 			}
 			case (byte) Instruction::ORA_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ORA(memory[address + Y]);
 				break;
 			}
 			case (byte) Instruction::ORA_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address + X, memory);
-				indirectAddress |= readByte(cycles, address + X + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address + X);
+				indirectAddress |= readByte(cycles, address + X + 1) << 8;
 
 				ORA(memory[indirectAddress]);
 				break;
 			}
 			case (byte) Instruction::ORA_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address, memory);
-				indirectAddress |= readByte(cycles, address + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address);
+				indirectAddress |= readByte(cycles, address + 1) << 8;
 
 				ORA(memory[indirectAddress + Y]);
 				break;
@@ -606,68 +612,68 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region EOR
 			case (byte) Instruction::EOR_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 
 				EOR(data);
 				break;
 			}
 			case (byte) Instruction::EOR_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				EOR(readByte(cycles, address, memory));
+				EOR(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::EOR_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				EOR(readByte(cycles, address + X, memory));
+				EOR(readByte(cycles, address + X));
 				break;
 			}
 			case (byte) Instruction::EOR_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				EOR(memory[address]);
 				break;
 			}
 			case (byte) Instruction::EOR_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				EOR(memory[address + X]);
 				break;
 			}
 			case (byte) Instruction::EOR_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				EOR(memory[address + Y]);
 				break;
 			}
 			case (byte) Instruction::EOR_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address + X, memory);
-				indirectAddress |= readByte(cycles, address + X + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address + X);
+				indirectAddress |= readByte(cycles, address + X + 1) << 8;
 
 				EOR(memory[indirectAddress]);
 				break;
 			}
 			case (byte) Instruction::EOR_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word indirectAddress = readByte(cycles, address, memory);
-				indirectAddress |= readByte(cycles, address + 1, memory) << 8;
+				word indirectAddress = readByte(cycles, address);
+				indirectAddress |= readByte(cycles, address + 1) << 8;
 
 				EOR(memory[indirectAddress + Y]);
 				break;
@@ -676,15 +682,15 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region BIT
 			case (byte) Instruction::BIT_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 
-				BIT(readByte(cycles, address, memory));
+				BIT(readByte(cycles, address));
 				break;
 			}
 			case (byte) Instruction::BIT_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				BIT(memory[address]);
 				break;
@@ -698,34 +704,34 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::ASL_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				ASL(data);
 				break;
 			}
 			case (byte) Instruction::ASL_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				ASL(data);
 				break;
 			}
 			case (byte) Instruction::ASL_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ASL(memory[address]);
 				break;
 			}
 			case (byte) Instruction::ASL_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ASL(memory[address + X]);
 				break;
@@ -739,34 +745,34 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::LSR_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				LSR(data);
 				break;
 			}
 			case (byte) Instruction::LSR_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				LSR(data);
 				break;
 			}
 			case (byte) Instruction::LSR_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				LSR(memory[address]);
 				break;
 			}
 			case (byte) Instruction::LSR_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				LSR(memory[address + X]);
 				break;
@@ -780,34 +786,34 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::ROL_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				ROL(data);
 				break;
 			}
 			case (byte) Instruction::ROL_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				ROL(data);
 				break;
 			}
 			case (byte) Instruction::ROL_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ROL(memory[address]);
 				break;
 			}
 			case (byte) Instruction::ROL_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ROL(memory[address + X]);
 				break;
@@ -821,34 +827,34 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::ROR_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				ROR(data);
 				break;
 			}
 			case (byte) Instruction::ROR_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				ROR(data);
 				break;
 			}
 			case (byte) Instruction::ROR_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ROR(memory[address]);
 				break;
 			}
 			case (byte) Instruction::ROR_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				ROR(memory[address + X]);
 				break;
@@ -857,34 +863,34 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region INC
 			case (byte) Instruction::INC_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				INC(data);
 				break;
 			}
 			case (byte) Instruction::INC_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				INC(data);
 				break;
 			}
 			case (byte) Instruction::INC_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				INC(memory[address]);
 				break;
 			}
 			case (byte) Instruction::INC_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				INC(memory[address + X]);
 				break;
@@ -893,34 +899,34 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region DEC
 			case (byte) Instruction::DEC_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				DEC(data);
 				break;
 			}
 			case (byte) Instruction::DEC_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				DEC(data);
 				break;
 			}
 			case (byte) Instruction::DEC_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				DEC(memory[address]);
 				break;
 			}
 			case (byte) Instruction::DEC_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				DEC(memory[address + X]);
 				break;
@@ -929,70 +935,70 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region CMP
 			case (byte) Instruction::CMP_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 				CMP(A, data);
 				break;
 			}
 			case (byte) Instruction::CMP_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				CMP(A, data);
 				break;
 			}
 			case (byte) Instruction::CMP_ZPX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				byte data = readByte(cycles, address + X, memory);
+				byte data = readByte(cycles, address + X);
 
 				CMP(A, data);
 				break;
 			}
 			case (byte) Instruction::CMP_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				CMP(A, memory[address]);
 				break;
 			}
 			case (byte) Instruction::CMP_ABX:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				CMP(A, memory[address + X]);
 				break;
 			}
 			case (byte) Instruction::CMP_ABY:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				CMP(A, memory[address + Y]);
 				break;
 			}
 			case (byte) Instruction::CMP_INX:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word data = readByte(cycles, address + X, memory);
-				data |= readByte(cycles, address + X + 1, memory) << 8;
+				word data = readByte(cycles, address + X);
+				data |= readByte(cycles, address + X + 1) << 8;
 
 				CMP(A, memory[data]);
 				break;
 			}
 			case (byte) Instruction::CMP_INY:
 			{
-				byte address = fetchByte(cycles, memory);
+				byte address = fetchByte(cycles);
 				cycles--;
 
-				word data = readByte(cycles, address, memory);
-				data |= readByte(cycles, address + 1, memory) << 8;
+				word data = readByte(cycles, address);
+				data |= readByte(cycles, address + 1) << 8;
 
 				CMP(A, memory[data + Y]);
 				break;
@@ -1001,22 +1007,22 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region CPX
 			case (byte) Instruction::CPX_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 				CMP(X, data);
 				break;
 			}
 			case (byte) Instruction::CPX_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				CMP(X, data);
 				break;
 			}
 			case (byte) Instruction::CPX_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				CMP(X, memory[address]);
 				break;
@@ -1025,22 +1031,22 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region CPY
 			case (byte) Instruction::CPY_IM:
 			{
-				byte data = fetchByte(cycles, memory);
+				byte data = fetchByte(cycles);
 				CMP(Y, data);
 				break;
 			}
 			case (byte) Instruction::CPY_ZP:
 			{
-				byte address = fetchByte(cycles, memory);
-				byte data = readByte(cycles, address, memory);
+				byte address = fetchByte(cycles);
+				byte data = readByte(cycles, address);
 
 				CMP(Y, data);
 				break;
 			}
 			case (byte) Instruction::CPY_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				CMP(Y, memory[address]);
 				break;
@@ -1108,7 +1114,7 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region Branch Instructions
 			case (byte) Instruction::BCC:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (!C)
@@ -1120,7 +1126,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BCS:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (C)
@@ -1132,7 +1138,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BNE:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (!Z)
@@ -1144,7 +1150,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BEQ:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (Z)
@@ -1156,7 +1162,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BPL:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (!N)
@@ -1168,7 +1174,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BMI:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (N)
@@ -1180,7 +1186,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BVC:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (!V)
@@ -1192,7 +1198,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::BVS:
 			{
-				byte offset = fetchByte(cycles, memory);
+				byte offset = fetchByte(cycles);
 				cycles--;
 
 				if (V)
@@ -1206,16 +1212,16 @@ void CPU::execute(dword cycles, Memory &memory)
 //#region Jump-Return Instructions
 			case (byte) Instruction::JMP_AB:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				PC = address;
 				break;
 			}
 			case (byte) Instruction::JMP_IN:
 			{
-				word address = fetchByte(cycles, memory);
-				address |= fetchByte(cycles, memory) << 8;
+				word address = fetchByte(cycles);
+				address |= fetchByte(cycles) << 8;
 
 				PC = memory[address];
 				PC |= memory[address + 1] << 8;
@@ -1223,7 +1229,7 @@ void CPU::execute(dword cycles, Memory &memory)
 			}
 			case (byte) Instruction::JSR:
 			{
-				word address = fetchWord(cycles, memory);
+				word address = fetchWord(cycles);
 
 				SP--;
 				memory[SP] = PC >> 8;
@@ -1348,7 +1354,7 @@ void CPU::execute(dword cycles, Memory &memory)
 	}
 }
 
-byte CPU::fetchByte(dword &cycles, Memory &memory)
+byte CPU::fetchByte(dword &cycles)
 {
 	byte data = memory[PC];
 	PC++;
@@ -1357,7 +1363,7 @@ byte CPU::fetchByte(dword &cycles, Memory &memory)
 	return data;
 }
 
-word CPU::fetchWord(dword &cycles, Memory &memory)
+word CPU::fetchWord(dword &cycles)
 {
 	word data = memory[PC];
 	data |= memory[PC] << 8;
@@ -1367,7 +1373,7 @@ word CPU::fetchWord(dword &cycles, Memory &memory)
 	return data;
 }
 
-byte CPU::readByte(dword &cycles, byte address, Memory &memory)
+byte CPU::readByte(dword &cycles, byte address)
 {
 	byte data = memory[address];
 	cycles--;
