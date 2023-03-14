@@ -8,7 +8,7 @@
 class CPU
 {
 public:
-	CPU(Memory &);
+	explicit CPU(Memory &);
 	~CPU() = default;
 
 	void reset();
@@ -16,7 +16,6 @@ public:
 
 	byte fetchByte(dword &);
 	word fetchWord(dword &);
-	byte readByte(dword &, byte);
 
 private:
 	Memory memory;
@@ -37,19 +36,28 @@ private:
 	byte V: 1; // Overflow Flag
 	byte N: 1; // Negative Flag
 
-	void LDA(byte);
-	void LDX();
 	void ADC(byte);
-	void SBC(byte);
 	void AND(byte);
-	void ORA(byte);
-	void EOR(byte);
-	void BIT(byte);
 	void ASL(byte &);
+	void BCC(byte);
+	void BCS(byte);
+	void BEQ(byte);
+	void BMI(byte);
+	void BNE(byte);
+	void BPL(byte);
+	void BVC(byte);
+	void BVS(byte);
+	void BIT(byte);
+	void CMP(byte, byte);
+	void DEC(byte &);
+	void EOR(byte);
+	void INC(byte &);
+	void LDA(byte);
+	void LDX(byte);
+	void LDY(byte);
 	void LSR(byte &);
+	void ORA(byte);
 	void ROL(byte &);
 	void ROR(byte &);
-	void INC(byte &);
-	void DEC(byte &);
-	void CMP(byte, byte);
+	void SBC(byte);
 };
