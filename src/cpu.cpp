@@ -29,6 +29,7 @@ void CPU::execute(dword cycles)
 {
 	while (cycles > 0)
 	{
+		// TODO: Make this switch statement more efficient.
 		byte opcode = fetchByte(cycles);
 		switch (opcode)
 		{

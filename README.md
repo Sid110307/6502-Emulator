@@ -42,8 +42,12 @@
 
 ## Usage
 
-- Edit between the `BEGIN Code` and `END Code` regions in [`main.cpp`](src/main.cpp) (currently you have to load machine
-  code into memory manually).
+- Load a program into the emulator's memory.
+  ```sh
+  $ ./bin/6502 <path/to/program.bin>
+  ```
+
+- Or manually edit between the `BEGIN Code` and `END Code` regions in [`main.cpp`](src/main.cpp).
   ```cpp
   // BEGIN Code
     // ...
