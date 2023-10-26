@@ -1,85 +1,183 @@
+// TODO: Add interface for video output.
+// TODO: Add interface for audio output.
+// TODO: Make it run DOOM.
+
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <filesystem>
+#include <fstream>
+#include <sstream>
 
 #include "include/cpu.h"
 #include "include/memory.h"
 
-// TODO: Add interface for video output.
-// TODO: Add interface for audio output.
-// TODO: Make it run DOOM.
-int main(int argc, char** argv)
+std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-recursion)
 {
-	std::vector<byte> buffer;
+    std::vector<byte> result;
 
-	if (argc > 1)
-	{
-		if (!std::filesystem::exists(argv[1]))
-		{
-			std::cerr << "File '" << argv[1] << "' does not exist." << std::endl;
-			return EXIT_FAILURE;
-		}
+    std::istringstream iss(buffer.data());
+    std::string line;
 
-		if (!std::filesystem::is_regular_file(argv[1]))
-		{
-			std::cerr << "File '" << argv[1] << "' is not a file." << std::endl;
-			return EXIT_FAILURE;
-		}
+    while (std::getline(iss, line))
+    {
+        std::istringstream lineIss(line);
+        std::string opcode;
+        lineIss >> opcode;
 
-		std::ifstream file(argv[1], std::ios::binary | std::ios::ate);
-		if (!file.is_open())
-		{
-			std::cerr << "Failed to open file '" << argv[1] << "'." << std::endl;
-			return EXIT_FAILURE;
-		}
+        if (!opcode.empty())
+        {
+            if (opcode[0] == ';') continue;
+            else if (opcode[0] == '.')
+            {
+                std::string directive;
+                lineIss >> directive;
 
-		std::cout << "Loading program from file: '" << argv[1] << "'... " << std::flush;
+                if (directive == "org")
+                {
+                    std::string address;
+                    lineIss >> address;
 
-		std::streampos size = file.tellg();
-		buffer.resize(size);
+                    std::istringstream addressIss(address);
+                    word addressValue = 0;
+                    addressIss >> std::hex >> addressValue;
 
-		file.seekg(0, std::ios::beg);
-		file.read((char*) buffer.data(), size);
-		file.close();
+                    result.resize(addressValue);
+                } else if (directive == "byte")
+                {
+                    std::string byteStr;
+                    lineIss >> byteStr;
 
-		std::cout << "Done." << std::endl;
-	}
+                    std::istringstream byteIss(byteStr);
+                    word byteValue = 0;
+                    byteIss >> std::hex >> byteValue;
 
-	std::cout << "Initializing memory... " << std::flush;
-	Memory memory = Memory();
-	CPU cpu = CPU(memory);
+                    result.push_back((byte) byteValue);
+                } else if (directive == "word")
+                {
+                    std::string wordStr;
+                    lineIss >> wordStr;
 
-	std::cout << "Done." << std::endl;
+                    std::istringstream wordIss(wordStr);
+                    word wordValue = 0;
+                    wordIss >> std::hex >> wordValue;
 
-	if (!buffer.empty())
-	{
-		std::cout << "Loading program... " << std::flush;
-		memory.load(buffer);
-		std::cout << "Done." << std::endl;
-	} else
-	{
-		std::cout << "Loading test program... " << std::flush;
-		// add 1 + 2 and store the result in accumulator
-		// BEGIN Code
-		memory[0x0000] = (byte) Instruction::LDA_IM;
-		memory[0x0001] = 0x01;
-		memory[0x0002] = (byte) Instruction::ADC_IM;
-		memory[0x0003] = 0x02;
-		memory[0x0004] = (byte) Instruction::STA_ZP;
-		memory[0x0005] = 0x00;
-		// END Code
+                    result.push_back((byte) (wordValue >> 8));
+                    result.push_back((byte) wordValue);
+                } else if (directive == "text" || directive == "code")
+                {
+                    std::cerr << "Text/code section directives are not supported yet." << std::endl;
+                    return {};
+                } else if (directive == "data")
+                {
+                    std::string dataValue;
+                    while (lineIss >> dataValue)
+                    {
+                        std::istringstream dataIss(dataValue);
+                        word dataByte = 0;
+                        dataIss >> std::hex >> dataByte;
+                        result.push_back((byte) dataByte);
+                    }
+                } else if (directive == "asciiz" || directive == "asciz")
+                {
+                    std::string string;
+                    lineIss >> string;
 
-		std::ofstream file("test.bin", std::ios::binary);
-		if (file.is_open())
-		{
-			file.write((char*) buffer.data(), (std::streamsize) buffer.size());
-			file.close();
-		}
+                    for (char c: string) result.push_back((byte) c);
+                    result.push_back((byte) 0);
+                } else if (directive == "equ")
+                {
+                    std::string symbol;
+                    lineIss >> symbol;
 
-		std::cout << "Done." << std::endl;
-		cpu.execute(14);
-	}
+                    std::string value;
+                    lineIss >> value;
 
-	return EXIT_SUCCESS;
+                    std::istringstream valueIss(value);
+                    word valueValue = 0;
+                    valueIss >> std::hex >> valueValue;
+
+                    std::cout << "Symbol: " << symbol << " = " << valueValue << std::endl;
+                } else if (directive == "ifdef" || directive == "ifndef" || directive == "else" ||
+                           directive == "endif")
+                {
+                    std::cerr << "Conditional assembly is not supported yet." << std::endl;
+                    return {};
+                } else if (directive == "include")
+                {
+                    std::string filename;
+                    lineIss >> filename;
+
+                    std::ifstream file(filename, std::ios::binary | std::ios::ate);
+                    if (!file.is_open())
+                    {
+                        std::cerr << "Failed to open file: " << filename << std::endl;
+                        return {};
+                    }
+
+                    std::streampos size = file.tellg();
+                    std::vector<char> includeBuffer(size);
+                    file.seekg(0, std::ios::beg);
+                    file.read(includeBuffer.data(), size);
+                    file.close();
+
+                    std::vector<byte> included = parseFile(includeBuffer);
+                    result.insert(result.end(), included.begin(), included.end());
+                } else if (directive == "macro" || directive == "endmacro")
+                {
+                    std::cerr << "Macros are not supported yet." << std::endl;
+                    return {};
+                } else
+                {
+                    std::cerr << "Unknown directive: " << directive << std::endl;
+                    return {};
+                }
+            } else
+            {
+                std::istringstream opcodeIss(opcode);
+                word opcodeValue = 0;
+                opcodeIss >> std::hex >> opcodeValue;
+
+                result.push_back((byte) opcodeValue);
+            }
+        }
+    }
+
+    return result;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <filename.s>" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::cout << "Initializing... " << std::flush;
+    Memory memory = Memory();
+    CPU cpu = CPU(memory);
+
+    std::cout << "Done." << std::endl;
+
+    std::cout << "Loading ROM... " << std::flush;
+    std::ifstream rom(argv[1], std::ios::binary | std::ios::ate);
+    if (!rom.is_open())
+    {
+        std::cerr << "Failed to open ROM." << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::streampos size = rom.tellg();
+    std::vector<char> buffer(size);
+    rom.seekg(0, std::ios::beg);
+    rom.read(buffer.data(), size);
+    rom.close();
+
+    memory.load(parseFile(buffer));
+    std::cout << "Done." << std::endl;
+
+    std::cout << "Running... " << std::flush;
+    cpu.execute();
+    std::cout << "Done." << std::endl;
+
+    return EXIT_SUCCESS;
 }
