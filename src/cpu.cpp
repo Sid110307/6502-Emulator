@@ -28,19 +28,19 @@ void CPU::reset()
 void CPU::execute()
 {
     dword cycles = 0;
-    while (cycles > 0)
+    while (true)
     {
         byte opcode = fetchByte(cycles);
         cycles = setOpcodeCycles(opcode);
 
         switch (opcode)
         {
-            case (byte) Instruction::BRK:
+            case static_cast<byte>(Instruction::BRK):
             {
                 PC++;
-                memory[SP] = (byte) (PC >> 8);
+                memory[SP] = static_cast<byte>(PC >> 8);
                 SP--;
-                memory[SP] = (byte) PC;
+                memory[SP] = static_cast<byte>(PC);
                 SP--;
 
                 byte status = 0x00;
@@ -59,544 +59,544 @@ void CPU::execute()
                 PC = memory[0xFFFE] | (memory[0xFFFF] << 8);
                 break;
             }
-            case (byte) Instruction::NOP:
+            case static_cast<byte>(Instruction::NOP):
             {
                 break;
             }
-            case (byte) Instruction::ADC_IM:
+            case static_cast<byte>(Instruction::ADC_IM):
             {
                 ADC(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::ADC_ZP:
+            case static_cast<byte>(Instruction::ADC_ZP):
             {
                 ADC(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::ADC_ZPX:
+            case static_cast<byte>(Instruction::ADC_ZPX):
             {
                 ADC(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ADC_AB:
+            case static_cast<byte>(Instruction::ADC_AB):
             {
                 ADC(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::ADC_ABX:
+            case static_cast<byte>(Instruction::ADC_ABX):
             {
                 ADC(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ADC_ABY:
+            case static_cast<byte>(Instruction::ADC_ABY):
             {
                 ADC(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::ADC_INX:
+            case static_cast<byte>(Instruction::ADC_INX):
             {
                 ADC(memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::ADC_INY:
+            case static_cast<byte>(Instruction::ADC_INY):
             {
                 ADC(memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::AND_IM:
+            case static_cast<byte>(Instruction::AND_IM):
             {
                 AND(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::AND_ZP:
+            case static_cast<byte>(Instruction::AND_ZP):
             {
                 AND(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::AND_ZPX:
+            case static_cast<byte>(Instruction::AND_ZPX):
             {
                 AND(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::AND_AB:
+            case static_cast<byte>(Instruction::AND_AB):
             {
                 AND(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::AND_ABX:
+            case static_cast<byte>(Instruction::AND_ABX):
             {
                 AND(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::AND_ABY:
+            case static_cast<byte>(Instruction::AND_ABY):
             {
                 AND(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::AND_INX:
+            case static_cast<byte>(Instruction::AND_INX):
             {
                 AND(memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::AND_INY:
+            case static_cast<byte>(Instruction::AND_INY):
             {
                 AND(memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::ASL_ACC:
+            case static_cast<byte>(Instruction::ASL_ACC):
             {
                 ASL(A);
                 break;
             }
-            case (byte) Instruction::ASL_ZP:
+            case static_cast<byte>(Instruction::ASL_ZP):
             {
                 ASL(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::ASL_ZPX:
+            case static_cast<byte>(Instruction::ASL_ZPX):
             {
                 ASL(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ASL_AB:
+            case static_cast<byte>(Instruction::ASL_AB):
             {
                 ASL(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::ASL_ABX:
+            case static_cast<byte>(Instruction::ASL_ABX):
             {
                 ASL(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::BCC:
+            case static_cast<byte>(Instruction::BCC):
             {
                 BCC(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BCS:
+            case static_cast<byte>(Instruction::BCS):
             {
                 BCS(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BEQ:
+            case static_cast<byte>(Instruction::BEQ):
             {
                 BEQ(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BMI:
+            case static_cast<byte>(Instruction::BMI):
             {
                 BMI(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BNE:
+            case static_cast<byte>(Instruction::BNE):
             {
                 BNE(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BPL:
+            case static_cast<byte>(Instruction::BPL):
             {
                 BPL(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BVC:
+            case static_cast<byte>(Instruction::BVC):
             {
                 BVC(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BVS:
+            case static_cast<byte>(Instruction::BVS):
             {
                 BVS(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::BIT_ZP:
+            case static_cast<byte>(Instruction::BIT_ZP):
             {
                 BIT(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::BIT_AB:
+            case static_cast<byte>(Instruction::BIT_AB):
             {
                 BIT(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::CLC:
+            case static_cast<byte>(Instruction::CLC):
             {
                 C = false;
                 break;
             }
-            case (byte) Instruction::CLD:
+            case static_cast<byte>(Instruction::CLD):
             {
                 D = false;
                 break;
             }
-            case (byte) Instruction::CLI:
+            case static_cast<byte>(Instruction::CLI):
             {
                 I = false;
                 break;
             }
-            case (byte) Instruction::CLV:
+            case static_cast<byte>(Instruction::CLV):
             {
                 V = false;
                 break;
             }
-            case (byte) Instruction::CMP_IM:
+            case static_cast<byte>(Instruction::CMP_IM):
             {
                 CMP(A, fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::CMP_ZP:
+            case static_cast<byte>(Instruction::CMP_ZP):
             {
                 CMP(A, memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::CMP_ZPX:
+            case static_cast<byte>(Instruction::CMP_ZPX):
             {
                 CMP(A, memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::CMP_AB:
+            case static_cast<byte>(Instruction::CMP_AB):
             {
                 CMP(A, memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::CMP_ABX:
+            case static_cast<byte>(Instruction::CMP_ABX):
             {
                 CMP(A, memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::CMP_ABY:
+            case static_cast<byte>(Instruction::CMP_ABY):
             {
                 CMP(A, memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::CMP_INX:
+            case static_cast<byte>(Instruction::CMP_INX):
             {
                 CMP(A, memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::CMP_INY:
+            case static_cast<byte>(Instruction::CMP_INY):
             {
                 CMP(A, memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::CPX_IM:
+            case static_cast<byte>(Instruction::CPX_IM):
             {
                 CMP(X, fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::CPX_ZP:
+            case static_cast<byte>(Instruction::CPX_ZP):
             {
                 CMP(X, memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::CPX_AB:
+            case static_cast<byte>(Instruction::CPX_AB):
             {
                 CMP(X, memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::CPY_IM:
+            case static_cast<byte>(Instruction::CPY_IM):
             {
                 CMP(Y, fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::CPY_ZP:
+            case static_cast<byte>(Instruction::CPY_ZP):
             {
                 CMP(Y, memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::CPY_AB:
+            case static_cast<byte>(Instruction::CPY_AB):
             {
                 CMP(Y, memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::DEC_ZP:
+            case static_cast<byte>(Instruction::DEC_ZP):
             {
                 DEC(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::DEC_ZPX:
+            case static_cast<byte>(Instruction::DEC_ZPX):
             {
                 DEC(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::DEC_AB:
+            case static_cast<byte>(Instruction::DEC_AB):
             {
                 DEC(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::DEC_ABX:
+            case static_cast<byte>(Instruction::DEC_ABX):
             {
                 DEC(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::DEX:
+            case static_cast<byte>(Instruction::DEX):
             {
                 DEC(X);
                 break;
             }
-            case (byte) Instruction::DEY:
+            case static_cast<byte>(Instruction::DEY):
             {
                 DEC(Y);
                 break;
             }
-            case (byte) Instruction::EOR_IM:
+            case static_cast<byte>(Instruction::EOR_IM):
             {
                 EOR(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::EOR_ZP:
+            case static_cast<byte>(Instruction::EOR_ZP):
             {
                 EOR(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::EOR_ZPX:
+            case static_cast<byte>(Instruction::EOR_ZPX):
             {
                 EOR(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::EOR_AB:
+            case static_cast<byte>(Instruction::EOR_AB):
             {
                 EOR(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::EOR_ABX:
+            case static_cast<byte>(Instruction::EOR_ABX):
             {
                 EOR(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::EOR_ABY:
+            case static_cast<byte>(Instruction::EOR_ABY):
             {
                 EOR(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::EOR_INX:
+            case static_cast<byte>(Instruction::EOR_INX):
             {
                 EOR(memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::EOR_INY:
+            case static_cast<byte>(Instruction::EOR_INY):
             {
                 EOR(memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::INC_ZP:
+            case static_cast<byte>(Instruction::INC_ZP):
             {
                 INC(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::INC_ZPX:
+            case static_cast<byte>(Instruction::INC_ZPX):
             {
                 INC(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::INC_AB:
+            case static_cast<byte>(Instruction::INC_AB):
             {
                 INC(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::INC_ABX:
+            case static_cast<byte>(Instruction::INC_ABX):
             {
                 INC(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::INX:
+            case static_cast<byte>(Instruction::INX):
             {
                 INC(X);
                 break;
             }
-            case (byte) Instruction::INY:
+            case static_cast<byte>(Instruction::INY):
             {
                 INC(Y);
                 break;
             }
-            case (byte) Instruction::JMP_AB:
+            case static_cast<byte>(Instruction::JMP_AB):
             {
                 PC = fetchWord(cycles);
                 break;
             }
-            case (byte) Instruction::JMP_IN:
+            case static_cast<byte>(Instruction::JMP_IN):
             {
                 PC = memory[fetchWord(cycles)];
                 break;
             }
-            case (byte) Instruction::JSR:
+            case static_cast<byte>(Instruction::JSR):
             {
                 PC = fetchWord(cycles);
                 break;
             }
-            case (byte) Instruction::LDA_IM:
+            case static_cast<byte>(Instruction::LDA_IM):
             {
                 LDA(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::LDA_ZP:
+            case static_cast<byte>(Instruction::LDA_ZP):
             {
                 LDA(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::LDA_ZPX:
+            case static_cast<byte>(Instruction::LDA_ZPX):
             {
                 LDA(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::LDA_AB:
+            case static_cast<byte>(Instruction::LDA_AB):
             {
                 LDA(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::LDA_ABX:
+            case static_cast<byte>(Instruction::LDA_ABX):
             {
                 LDA(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::LDA_ABY:
+            case static_cast<byte>(Instruction::LDA_ABY):
             {
                 LDA(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::LDA_INX:
+            case static_cast<byte>(Instruction::LDA_INX):
             {
                 LDA(memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::LDA_INY:
+            case static_cast<byte>(Instruction::LDA_INY):
             {
                 LDA(memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::LDX_IM:
+            case static_cast<byte>(Instruction::LDX_IM):
             {
                 LDX(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::LDX_ZP:
+            case static_cast<byte>(Instruction::LDX_ZP):
             {
                 LDX(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::LDX_ZPY:
+            case static_cast<byte>(Instruction::LDX_ZPY):
             {
                 LDX(memory[fetchByte(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::LDX_AB:
+            case static_cast<byte>(Instruction::LDX_AB):
             {
                 LDX(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::LDX_ABY:
+            case static_cast<byte>(Instruction::LDX_ABY):
             {
                 LDX(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::LDY_IM:
+            case static_cast<byte>(Instruction::LDY_IM):
             {
                 LDY(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::LDY_ZP:
+            case static_cast<byte>(Instruction::LDY_ZP):
             {
                 LDY(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::LDY_ZPX:
+            case static_cast<byte>(Instruction::LDY_ZPX):
             {
                 LDY(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::LDY_AB:
+            case static_cast<byte>(Instruction::LDY_AB):
             {
                 LDY(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::LDY_ABX:
+            case static_cast<byte>(Instruction::LDY_ABX):
             {
                 LDY(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::LSR_ACC:
+            case static_cast<byte>(Instruction::LSR_ACC):
             {
                 LSR(A);
                 break;
             }
-            case (byte) Instruction::LSR_ZP:
+            case static_cast<byte>(Instruction::LSR_ZP):
             {
                 LSR(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::LSR_ZPX:
+            case static_cast<byte>(Instruction::LSR_ZPX):
             {
                 LSR(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::LSR_AB:
+            case static_cast<byte>(Instruction::LSR_AB):
             {
                 LSR(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::LSR_ABX:
+            case static_cast<byte>(Instruction::LSR_ABX):
             {
                 LSR(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ORA_IM:
+            case static_cast<byte>(Instruction::ORA_IM):
             {
                 ORA(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::ORA_ZP:
+            case static_cast<byte>(Instruction::ORA_ZP):
             {
                 ORA(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::ORA_ZPX:
+            case static_cast<byte>(Instruction::ORA_ZPX):
             {
                 ORA(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ORA_AB:
+            case static_cast<byte>(Instruction::ORA_AB):
             {
                 ORA(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::ORA_ABX:
+            case static_cast<byte>(Instruction::ORA_ABX):
             {
                 ORA(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ORA_ABY:
+            case static_cast<byte>(Instruction::ORA_ABY):
             {
                 ORA(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::ORA_INX:
+            case static_cast<byte>(Instruction::ORA_INX):
             {
                 ORA(memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::ORA_INY:
+            case static_cast<byte>(Instruction::ORA_INY):
             {
                 ORA(memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::PHA:
+            case static_cast<byte>(Instruction::PHA):
             {
                 memory[0x100 + SP] = A;
                 SP--;
                 break;
             }
-            case (byte) Instruction::PHP:
+            case static_cast<byte>(Instruction::PHP):
             {
-                memory[0x100 + SP] = (byte) (C | Z | I | D | B | U | V | N);
+                memory[0x100 + SP] = static_cast<byte>(C | Z | I | D | B | U | V | N);
                 SP--;
                 break;
             }
-            case (byte) Instruction::PLA:
+            case static_cast<byte>(Instruction::PLA):
             {
                 SP++;
                 A = memory[0x100 + SP];
                 break;
             }
-            case (byte) Instruction::PLP:
+            case static_cast<byte>(Instruction::PLP):
             {
                 SP++;
                 byte flags = memory[0x100 + SP];
@@ -612,57 +612,57 @@ void CPU::execute()
 
                 break;
             }
-            case (byte) Instruction::ROL_ACC:
+            case static_cast<byte>(Instruction::ROL_ACC):
             {
                 ROL(A);
                 break;
             }
-            case (byte) Instruction::ROL_ZP:
+            case static_cast<byte>(Instruction::ROL_ZP):
             {
                 ROL(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::ROL_ZPX:
+            case static_cast<byte>(Instruction::ROL_ZPX):
             {
                 ROL(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ROL_AB:
+            case static_cast<byte>(Instruction::ROL_AB):
             {
                 ROL(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::ROL_ABX:
+            case static_cast<byte>(Instruction::ROL_ABX):
             {
                 ROL(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ROR_ACC:
+            case static_cast<byte>(Instruction::ROR_ACC):
             {
                 ROR(A);
                 break;
             }
-            case (byte) Instruction::ROR_ZP:
+            case static_cast<byte>(Instruction::ROR_ZP):
             {
                 ROR(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::ROR_ZPX:
+            case static_cast<byte>(Instruction::ROR_ZPX):
             {
                 ROR(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::ROR_AB:
+            case static_cast<byte>(Instruction::ROR_AB):
             {
                 ROR(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::ROR_ABX:
+            case static_cast<byte>(Instruction::ROR_ABX):
             {
                 ROR(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::RTI:
+            case static_cast<byte>(Instruction::RTI):
             {
                 SP++;
                 byte status = memory[0x100 + SP];
@@ -681,7 +681,7 @@ void CPU::execute()
 
                 break;
             }
-            case (byte) Instruction::RTS:
+            case static_cast<byte>(Instruction::RTS):
             {
                 SP++;
                 PC = memory[0x100 + SP];
@@ -690,162 +690,165 @@ void CPU::execute()
 
                 break;
             }
-            case (byte) Instruction::SBC_IM:
+            case static_cast<byte>(Instruction::SBC_IM):
             {
                 SBC(fetchByte(cycles));
                 break;
             }
-            case (byte) Instruction::SBC_ZP:
+            case static_cast<byte>(Instruction::SBC_ZP):
             {
                 SBC(memory[fetchByte(cycles)]);
                 break;
             }
-            case (byte) Instruction::SBC_ZPX:
+            case static_cast<byte>(Instruction::SBC_ZPX):
             {
                 SBC(memory[fetchByte(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::SBC_AB:
+            case static_cast<byte>(Instruction::SBC_AB):
             {
                 SBC(memory[fetchWord(cycles)]);
                 break;
             }
-            case (byte) Instruction::SBC_ABX:
+            case static_cast<byte>(Instruction::SBC_ABX):
             {
                 SBC(memory[fetchWord(cycles) + X]);
                 break;
             }
-            case (byte) Instruction::SBC_ABY:
+            case static_cast<byte>(Instruction::SBC_ABY):
             {
                 SBC(memory[fetchWord(cycles) + Y]);
                 break;
             }
-            case (byte) Instruction::SBC_INX:
+            case static_cast<byte>(Instruction::SBC_INX):
             {
                 SBC(memory[memory[fetchByte(cycles) + X]]);
                 break;
             }
-            case (byte) Instruction::SBC_INY:
+            case static_cast<byte>(Instruction::SBC_INY):
             {
                 SBC(memory[memory[fetchByte(cycles)] + Y]);
                 break;
             }
-            case (byte) Instruction::SEC:
+            case static_cast<byte>(Instruction::SEC):
             {
                 C = true;
                 break;
             }
-            case (byte) Instruction::SED:
+            case static_cast<byte>(Instruction::SED):
             {
                 D = true;
                 break;
             }
-            case (byte) Instruction::SEI:
+            case static_cast<byte>(Instruction::SEI):
             {
                 I = true;
                 break;
             }
-            case (byte) Instruction::STA_ZP:
+            case static_cast<byte>(Instruction::STA_ZP):
             {
                 memory[fetchByte(cycles)] = A;
                 break;
             }
-            case (byte) Instruction::STA_ZPX:
+            case static_cast<byte>(Instruction::STA_ZPX):
             {
                 memory[fetchByte(cycles) + X] = A;
                 break;
             }
-            case (byte) Instruction::STA_AB:
+            case static_cast<byte>(Instruction::STA_AB):
             {
                 memory[fetchWord(cycles)] = A;
                 break;
             }
-            case (byte) Instruction::STA_ABX:
+            case static_cast<byte>(Instruction::STA_ABX):
             {
                 memory[fetchWord(cycles) + X] = A;
                 break;
             }
-            case (byte) Instruction::STA_ABY:
+            case static_cast<byte>(Instruction::STA_ABY):
             {
                 memory[fetchWord(cycles) + Y] = A;
                 break;
             }
-            case (byte) Instruction::STA_INX:
+            case static_cast<byte>(Instruction::STA_INX):
             {
                 memory[memory[fetchByte(cycles) + X]] = A;
                 break;
             }
-            case (byte) Instruction::STA_INY:
+            case static_cast<byte>(Instruction::STA_INY):
             {
                 memory[memory[fetchByte(cycles)] + Y] = A;
                 break;
             }
-            case (byte) Instruction::STX_ZP:
+            case static_cast<byte>(Instruction::STX_ZP):
             {
                 memory[fetchByte(cycles)] = X;
                 break;
             }
-            case (byte) Instruction::STX_ZPY:
+            case static_cast<byte>(Instruction::STX_ZPY):
             {
                 memory[fetchByte(cycles) + Y] = X;
                 break;
             }
-            case (byte) Instruction::STX_AB:
+            case static_cast<byte>(Instruction::STX_AB):
             {
                 memory[fetchWord(cycles)] = X;
                 break;
             }
-            case (byte) Instruction::STY_ZP:
+            case static_cast<byte>(Instruction::STY_ZP):
             {
                 memory[fetchByte(cycles)] = Y;
                 break;
             }
-            case (byte) Instruction::STY_ZPX:
+            case static_cast<byte>(Instruction::STY_ZPX):
             {
                 memory[fetchByte(cycles) + X] = Y;
                 break;
             }
-            case (byte) Instruction::STY_AB:
+            case static_cast<byte>(Instruction::STY_AB):
             {
                 memory[fetchWord(cycles)] = Y;
                 break;
             }
-            case (byte) Instruction::TAX:
+            case static_cast<byte>(Instruction::TAX):
             {
                 X = A;
                 break;
             }
-            case (byte) Instruction::TXA:
+            case static_cast<byte>(Instruction::TXA):
             {
                 A = X;
                 break;
             }
-            case (byte) Instruction::TAY:
+            case static_cast<byte>(Instruction::TAY):
             {
                 Y = A;
                 break;
             }
-            case (byte) Instruction::TYA:
+            case static_cast<byte>(Instruction::TYA):
             {
                 A = Y;
                 break;
             }
-            case (byte) Instruction::TSX:
+            case static_cast<byte>(Instruction::TSX):
             {
                 X = SP;
                 break;
             }
-            case (byte) Instruction::TXS:
+            case static_cast<byte>(Instruction::TXS):
             {
                 SP = X;
                 break;
             }
             default:
             {
-                std::cerr << "Unknown opcode: " << std::hex << (int) opcode << std::endl;
+                std::cerr << "Unknown opcode: " << std::hex << static_cast<int>(opcode) << std::endl;
                 break;
             }
         }
+
+        cycles--;
+        if (cycles == 0) break;
     }
 }
 
@@ -893,45 +896,14 @@ void CPU::ASL(byte &data)
     N = (data & 0x80) != 0;
 }
 
-void CPU::BCC(byte data)
-{
-    if (!C) PC += data;
-}
-
-void CPU::BCS(byte data)
-{
-    if (C) PC += data;
-}
-
-void CPU::BEQ(byte data)
-{
-    if (Z) PC += data;
-}
-
-void CPU::BMI(byte data)
-{
-    if (N) PC += data;
-}
-
-void CPU::BNE(byte data)
-{
-    if (!Z) PC += data;
-}
-
-void CPU::BPL(byte data)
-{
-    if (!N) PC += data;
-}
-
-void CPU::BVC(byte data)
-{
-    if (!V) PC += data;
-}
-
-void CPU::BVS(byte data)
-{
-    if (V) PC += data;
-}
+void CPU::BCC(byte data) { if (!C) PC += data; }
+void CPU::BCS(byte data) { if (C) PC += data; }
+void CPU::BEQ(byte data) { if (Z) PC += data; }
+void CPU::BMI(byte data) { if (N) PC += data; }
+void CPU::BNE(byte data) { if (!Z) PC += data; }
+void CPU::BPL(byte data) { if (!N) PC += data; }
+void CPU::BVC(byte data) { if (!V) PC += data; }
+void CPU::BVS(byte data) { if (V) PC += data; }
 
 void CPU::BIT(byte data)
 {
@@ -1044,176 +1016,176 @@ dword CPU::setOpcodeCycles(byte opcode)
 
     switch (opcode)
     {
-        case (byte) Instruction::ADC_IM:
-        case (byte) Instruction::AND_IM:
-        case (byte) Instruction::ASL_ACC:
-        case (byte) Instruction::CLC:
-        case (byte) Instruction::CLD:
-        case (byte) Instruction::CLI:
-        case (byte) Instruction::CLV:
-        case (byte) Instruction::CMP_IM:
-        case (byte) Instruction::CPX_IM:
-        case (byte) Instruction::CPY_IM:
-        case (byte) Instruction::DEX:
-        case (byte) Instruction::DEY:
-        case (byte) Instruction::EOR_IM:
-        case (byte) Instruction::INX:
-        case (byte) Instruction::INY:
-        case (byte) Instruction::LDA_IM:
-        case (byte) Instruction::LDX_IM:
-        case (byte) Instruction::LDY_IM:
-        case (byte) Instruction::LSR_ACC:
-        case (byte) Instruction::NOP:
-        case (byte) Instruction::ORA_IM:
-        case (byte) Instruction::ROL_ACC:
-        case (byte) Instruction::ROR_ACC:
-        case (byte) Instruction::SBC_IM:
-        case (byte) Instruction::SEC:
-        case (byte) Instruction::SED:
-        case (byte) Instruction::SEI:
-        case (byte) Instruction::TAX:
-        case (byte) Instruction::TAY:
-        case (byte) Instruction::TSX:
-        case (byte) Instruction::TXA:
-        case (byte) Instruction::TXS:
-        case (byte) Instruction::TYA:
+        case static_cast<byte>(Instruction::ADC_IM):
+        case static_cast<byte>(Instruction::AND_IM):
+        case static_cast<byte>(Instruction::ASL_ACC):
+        case static_cast<byte>(Instruction::CLC):
+        case static_cast<byte>(Instruction::CLD):
+        case static_cast<byte>(Instruction::CLI):
+        case static_cast<byte>(Instruction::CLV):
+        case static_cast<byte>(Instruction::CMP_IM):
+        case static_cast<byte>(Instruction::CPX_IM):
+        case static_cast<byte>(Instruction::CPY_IM):
+        case static_cast<byte>(Instruction::DEX):
+        case static_cast<byte>(Instruction::DEY):
+        case static_cast<byte>(Instruction::EOR_IM):
+        case static_cast<byte>(Instruction::INX):
+        case static_cast<byte>(Instruction::INY):
+        case static_cast<byte>(Instruction::LDA_IM):
+        case static_cast<byte>(Instruction::LDX_IM):
+        case static_cast<byte>(Instruction::LDY_IM):
+        case static_cast<byte>(Instruction::LSR_ACC):
+        case static_cast<byte>(Instruction::NOP):
+        case static_cast<byte>(Instruction::ORA_IM):
+        case static_cast<byte>(Instruction::ROL_ACC):
+        case static_cast<byte>(Instruction::ROR_ACC):
+        case static_cast<byte>(Instruction::SBC_IM):
+        case static_cast<byte>(Instruction::SEC):
+        case static_cast<byte>(Instruction::SED):
+        case static_cast<byte>(Instruction::SEI):
+        case static_cast<byte>(Instruction::TAX):
+        case static_cast<byte>(Instruction::TAY):
+        case static_cast<byte>(Instruction::TSX):
+        case static_cast<byte>(Instruction::TXA):
+        case static_cast<byte>(Instruction::TXS):
+        case static_cast<byte>(Instruction::TYA):
             totalCycles += 2;
             break;
-        case (byte) Instruction::BCC:
-        case (byte) Instruction::BCS:
-        case (byte) Instruction::BEQ:
-        case (byte) Instruction::BMI:
-        case (byte) Instruction::BNE:
-        case (byte) Instruction::BPL:
-        case (byte) Instruction::BVC:
-        case (byte) Instruction::BVS:
+        case static_cast<byte>(Instruction::BCC):
+        case static_cast<byte>(Instruction::BCS):
+        case static_cast<byte>(Instruction::BEQ):
+        case static_cast<byte>(Instruction::BMI):
+        case static_cast<byte>(Instruction::BNE):
+        case static_cast<byte>(Instruction::BPL):
+        case static_cast<byte>(Instruction::BVC):
+        case static_cast<byte>(Instruction::BVS):
             totalCycles += 2;
             extraCycle = true;
             break;
-        case (byte) Instruction::ADC_ZP:
-        case (byte) Instruction::AND_ZP:
-        case (byte) Instruction::BIT_ZP:
-        case (byte) Instruction::CMP_ZP:
-        case (byte) Instruction::CPX_ZP:
-        case (byte) Instruction::CPY_ZP:
-        case (byte) Instruction::EOR_ZP:
-        case (byte) Instruction::JMP_AB:
-        case (byte) Instruction::LDA_ZP:
-        case (byte) Instruction::LDX_ZP:
-        case (byte) Instruction::LDY_ZP:
-        case (byte) Instruction::ORA_ZP:
-        case (byte) Instruction::PHA:
-        case (byte) Instruction::PHP:
-        case (byte) Instruction::SBC_ZP:
-        case (byte) Instruction::STA_ZP:
-        case (byte) Instruction::STX_ZP:
-        case (byte) Instruction::STY_ZP:
+        case static_cast<byte>(Instruction::ADC_ZP):
+        case static_cast<byte>(Instruction::AND_ZP):
+        case static_cast<byte>(Instruction::BIT_ZP):
+        case static_cast<byte>(Instruction::CMP_ZP):
+        case static_cast<byte>(Instruction::CPX_ZP):
+        case static_cast<byte>(Instruction::CPY_ZP):
+        case static_cast<byte>(Instruction::EOR_ZP):
+        case static_cast<byte>(Instruction::JMP_AB):
+        case static_cast<byte>(Instruction::LDA_ZP):
+        case static_cast<byte>(Instruction::LDX_ZP):
+        case static_cast<byte>(Instruction::LDY_ZP):
+        case static_cast<byte>(Instruction::ORA_ZP):
+        case static_cast<byte>(Instruction::PHA):
+        case static_cast<byte>(Instruction::PHP):
+        case static_cast<byte>(Instruction::SBC_ZP):
+        case static_cast<byte>(Instruction::STA_ZP):
+        case static_cast<byte>(Instruction::STX_ZP):
+        case static_cast<byte>(Instruction::STY_ZP):
             totalCycles += 3;
             break;
-        case (byte) Instruction::ADC_ZPX:
-        case (byte) Instruction::ADC_AB:
-        case (byte) Instruction::AND_ZPX:
-        case (byte) Instruction::AND_AB:
-        case (byte) Instruction::BIT_AB:
-        case (byte) Instruction::CMP_ZPX:
-        case (byte) Instruction::CMP_AB:
-        case (byte) Instruction::CPX_AB:
-        case (byte) Instruction::CPY_AB:
-        case (byte) Instruction::EOR_ZPX:
-        case (byte) Instruction::EOR_AB:
-        case (byte) Instruction::LDA_ZPX:
-        case (byte) Instruction::LDA_AB:
-        case (byte) Instruction::LDX_ZPY:
-        case (byte) Instruction::LDX_AB:
-        case (byte) Instruction::LDY_ZPX:
-        case (byte) Instruction::LDY_AB:
-        case (byte) Instruction::ORA_ZPX:
-        case (byte) Instruction::ORA_AB:
-        case (byte) Instruction::PLA:
-        case (byte) Instruction::PLP:
-        case (byte) Instruction::SBC_ZPX:
-        case (byte) Instruction::SBC_AB:
-        case (byte) Instruction::STA_ZPX:
-        case (byte) Instruction::STA_AB:
-        case (byte) Instruction::STX_ZPY:
-        case (byte) Instruction::STX_AB:
-        case (byte) Instruction::STY_ZPX:
-        case (byte) Instruction::STY_AB:
+        case static_cast<byte>(Instruction::ADC_ZPX):
+        case static_cast<byte>(Instruction::ADC_AB):
+        case static_cast<byte>(Instruction::AND_ZPX):
+        case static_cast<byte>(Instruction::AND_AB):
+        case static_cast<byte>(Instruction::BIT_AB):
+        case static_cast<byte>(Instruction::CMP_ZPX):
+        case static_cast<byte>(Instruction::CMP_AB):
+        case static_cast<byte>(Instruction::CPX_AB):
+        case static_cast<byte>(Instruction::CPY_AB):
+        case static_cast<byte>(Instruction::EOR_ZPX):
+        case static_cast<byte>(Instruction::EOR_AB):
+        case static_cast<byte>(Instruction::LDA_ZPX):
+        case static_cast<byte>(Instruction::LDA_AB):
+        case static_cast<byte>(Instruction::LDX_ZPY):
+        case static_cast<byte>(Instruction::LDX_AB):
+        case static_cast<byte>(Instruction::LDY_ZPX):
+        case static_cast<byte>(Instruction::LDY_AB):
+        case static_cast<byte>(Instruction::ORA_ZPX):
+        case static_cast<byte>(Instruction::ORA_AB):
+        case static_cast<byte>(Instruction::PLA):
+        case static_cast<byte>(Instruction::PLP):
+        case static_cast<byte>(Instruction::SBC_ZPX):
+        case static_cast<byte>(Instruction::SBC_AB):
+        case static_cast<byte>(Instruction::STA_ZPX):
+        case static_cast<byte>(Instruction::STA_AB):
+        case static_cast<byte>(Instruction::STX_ZPY):
+        case static_cast<byte>(Instruction::STX_AB):
+        case static_cast<byte>(Instruction::STY_ZPX):
+        case static_cast<byte>(Instruction::STY_AB):
             totalCycles += 4;
             break;
-        case (byte) Instruction::ADC_ABX:
-        case (byte) Instruction::ADC_ABY:
-        case (byte) Instruction::AND_ABX:
-        case (byte) Instruction::AND_ABY:
-        case (byte) Instruction::CMP_ABX:
-        case (byte) Instruction::CMP_ABY:
-        case (byte) Instruction::EOR_ABX:
-        case (byte) Instruction::EOR_ABY:
-        case (byte) Instruction::LDA_ABX:
-        case (byte) Instruction::LDA_ABY:
-        case (byte) Instruction::LDX_ABY:
-        case (byte) Instruction::LDY_ABX:
-        case (byte) Instruction::ORA_ABX:
-        case (byte) Instruction::ORA_ABY:
-        case (byte) Instruction::SBC_ABX:
-        case (byte) Instruction::SBC_ABY:
+        case static_cast<byte>(Instruction::ADC_ABX):
+        case static_cast<byte>(Instruction::ADC_ABY):
+        case static_cast<byte>(Instruction::AND_ABX):
+        case static_cast<byte>(Instruction::AND_ABY):
+        case static_cast<byte>(Instruction::CMP_ABX):
+        case static_cast<byte>(Instruction::CMP_ABY):
+        case static_cast<byte>(Instruction::EOR_ABX):
+        case static_cast<byte>(Instruction::EOR_ABY):
+        case static_cast<byte>(Instruction::LDA_ABX):
+        case static_cast<byte>(Instruction::LDA_ABY):
+        case static_cast<byte>(Instruction::LDX_ABY):
+        case static_cast<byte>(Instruction::LDY_ABX):
+        case static_cast<byte>(Instruction::ORA_ABX):
+        case static_cast<byte>(Instruction::ORA_ABY):
+        case static_cast<byte>(Instruction::SBC_ABX):
+        case static_cast<byte>(Instruction::SBC_ABY):
             totalCycles += 4;
             extraCycle = true;
             break;
-        case (byte) Instruction::ASL_ZP:
-        case (byte) Instruction::DEC_ZP:
-        case (byte) Instruction::INC_ZP:
-        case (byte) Instruction::JMP_IN:
-        case (byte) Instruction::LSR_ZP:
-        case (byte) Instruction::ROL_ZP:
-        case (byte) Instruction::ROR_ZP:
-        case (byte) Instruction::STA_ABX:
-        case (byte) Instruction::STA_ABY:
+        case static_cast<byte>(Instruction::ASL_ZP):
+        case static_cast<byte>(Instruction::DEC_ZP):
+        case static_cast<byte>(Instruction::INC_ZP):
+        case static_cast<byte>(Instruction::JMP_IN):
+        case static_cast<byte>(Instruction::LSR_ZP):
+        case static_cast<byte>(Instruction::ROL_ZP):
+        case static_cast<byte>(Instruction::ROR_ZP):
+        case static_cast<byte>(Instruction::STA_ABX):
+        case static_cast<byte>(Instruction::STA_ABY):
             totalCycles += 5;
             break;
-        case (byte) Instruction::ADC_INY:
-        case (byte) Instruction::AND_INY:
-        case (byte) Instruction::CMP_INY:
-        case (byte) Instruction::EOR_INY:
-        case (byte) Instruction::LDA_INY:
-        case (byte) Instruction::ORA_INY:
-        case (byte) Instruction::SBC_INY:
+        case static_cast<byte>(Instruction::ADC_INY):
+        case static_cast<byte>(Instruction::AND_INY):
+        case static_cast<byte>(Instruction::CMP_INY):
+        case static_cast<byte>(Instruction::EOR_INY):
+        case static_cast<byte>(Instruction::LDA_INY):
+        case static_cast<byte>(Instruction::ORA_INY):
+        case static_cast<byte>(Instruction::SBC_INY):
             totalCycles += 5;
             extraCycle = true;
             break;
-        case (byte) Instruction::ADC_INX:
-        case (byte) Instruction::AND_INX:
-        case (byte) Instruction::ASL_ZPX:
-        case (byte) Instruction::ASL_AB:
-        case (byte) Instruction::CMP_INX:
-        case (byte) Instruction::DEC_ZPX:
-        case (byte) Instruction::DEC_AB:
-        case (byte) Instruction::EOR_INX:
-        case (byte) Instruction::INC_ZPX:
-        case (byte) Instruction::INC_AB:
-        case (byte) Instruction::JSR:
-        case (byte) Instruction::LDA_INX:
-        case (byte) Instruction::LSR_ZPX:
-        case (byte) Instruction::LSR_AB:
-        case (byte) Instruction::ORA_INX:
-        case (byte) Instruction::ROL_ZPX:
-        case (byte) Instruction::ROL_AB:
-        case (byte) Instruction::ROR_ZPX:
-        case (byte) Instruction::ROR_AB:
-        case (byte) Instruction::RTI:
-        case (byte) Instruction::RTS:
-        case (byte) Instruction::SBC_INX:
-        case (byte) Instruction::STA_INX:
-        case (byte) Instruction::STA_INY:
+        case static_cast<byte>(Instruction::ADC_INX):
+        case static_cast<byte>(Instruction::AND_INX):
+        case static_cast<byte>(Instruction::ASL_ZPX):
+        case static_cast<byte>(Instruction::ASL_AB):
+        case static_cast<byte>(Instruction::CMP_INX):
+        case static_cast<byte>(Instruction::DEC_ZPX):
+        case static_cast<byte>(Instruction::DEC_AB):
+        case static_cast<byte>(Instruction::EOR_INX):
+        case static_cast<byte>(Instruction::INC_ZPX):
+        case static_cast<byte>(Instruction::INC_AB):
+        case static_cast<byte>(Instruction::JSR):
+        case static_cast<byte>(Instruction::LDA_INX):
+        case static_cast<byte>(Instruction::LSR_ZPX):
+        case static_cast<byte>(Instruction::LSR_AB):
+        case static_cast<byte>(Instruction::ORA_INX):
+        case static_cast<byte>(Instruction::ROL_ZPX):
+        case static_cast<byte>(Instruction::ROL_AB):
+        case static_cast<byte>(Instruction::ROR_ZPX):
+        case static_cast<byte>(Instruction::ROR_AB):
+        case static_cast<byte>(Instruction::RTI):
+        case static_cast<byte>(Instruction::RTS):
+        case static_cast<byte>(Instruction::SBC_INX):
+        case static_cast<byte>(Instruction::STA_INX):
+        case static_cast<byte>(Instruction::STA_INY):
             totalCycles += 6;
             break;
-        case (byte) Instruction::ASL_ABX:
-        case (byte) Instruction::BRK:
-        case (byte) Instruction::DEC_ABX:
-        case (byte) Instruction::INC_ABX:
-        case (byte) Instruction::LSR_ABX:
-        case (byte) Instruction::ROL_ABX:
-        case (byte) Instruction::ROR_ABX:
+        case static_cast<byte>(Instruction::ASL_ABX):
+        case static_cast<byte>(Instruction::BRK):
+        case static_cast<byte>(Instruction::DEC_ABX):
+        case static_cast<byte>(Instruction::INC_ABX):
+        case static_cast<byte>(Instruction::LSR_ABX):
+        case static_cast<byte>(Instruction::ROL_ABX):
+        case static_cast<byte>(Instruction::ROR_ABX):
             totalCycles += 7;
             break;
         default:

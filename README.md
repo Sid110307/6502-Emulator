@@ -42,17 +42,9 @@
 
 ## Usage
 
-- Load a program into the emulator's memory.
-  ```sh
-  $ ./bin/6502 <path/to/program.bin>
-  ```
-
-- Or manually edit between the `BEGIN Code` and `END Code` regions in [`main.cpp`](src/main.cpp).
-  ```cpp
-  // BEGIN Code
-    // ...
-  // END Code
-  ```
+```sh
+$ ./bin/6502 <path/to/program.bin>
+```
 
 - **Note:** Don't forget to change the clock cycles at the `cpu.execute()` call.
 - Build and run the emulator as described [above](#building).

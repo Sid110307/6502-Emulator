@@ -1,15 +1,11 @@
 #include "include/memory.h"
 
-void Memory::init()
-{
-    for (byte &i: data) i = 0x00;
-}
-
+void Memory::init() { std::fill(data, data + MAX_MEMORY, 0x00); }
 byte Memory::operator[](dword index) const
 {
     if (index >= MAX_MEMORY)
     {
-        std::cerr << "Memory index out of bounds: " << index << std::endl;
+        std::cerr << "Memory index out of bounds: " << index << " (read)" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -20,7 +16,7 @@ byte &Memory::operator[](dword index)
 {
     if (index >= MAX_MEMORY)
     {
-        std::cerr << "Memory index out of bounds: " << index << std::endl;
+        std::cerr << "Memory index out of bounds: " << index << " (write)" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -39,7 +35,7 @@ void Memory::load(const std::vector<byte> &buffer)
 {
     std::copy(buffer.begin(), buffer.end(), data);
 
-    for (word i = 0; i < (word) buffer.size();)
+    for (word i = 0; i < static_cast<word>(buffer.size());)
     {
         auto instruction = (Instruction) data[i];
         byte size = 0;
@@ -211,7 +207,7 @@ void Memory::load(const std::vector<byte> &buffer)
             }
             default:
             {
-                std::cerr << "Unknown opcode: " << std::hex << (int) instruction << std::endl;
+                std::cerr << "Unknown opcode: " << std::hex << static_cast<int>(instruction) << std::endl;
                 size = 1;
 
                 break;

@@ -1,17 +1,16 @@
-// TODO: Add interface for video output.
-// TODO: Add interface for audio output.
-// TODO: Make it run DOOM.
-
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
 #include "include/cpu.h"
 #include "include/memory.h"
 
-std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-recursion)
+std::vector<byte> parseFile(const std::vector<char> &buffer)
 {
+    std::unordered_map<std::string, word> symbols;
+    std::vector<bool> conditionStack;
     std::vector<byte> result;
 
     std::istringstream iss(buffer.data());
@@ -50,7 +49,7 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
                     word byteValue = 0;
                     byteIss >> std::hex >> byteValue;
 
-                    result.push_back((byte) byteValue);
+                    result.push_back(static_cast<byte>(byteValue));
                 } else if (directive == "word")
                 {
                     std::string wordStr;
@@ -60,11 +59,11 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
                     word wordValue = 0;
                     wordIss >> std::hex >> wordValue;
 
-                    result.push_back((byte) (wordValue >> 8));
-                    result.push_back((byte) wordValue);
+                    result.push_back(static_cast<byte>((wordValue >> 8)));
+                    result.push_back(static_cast<byte>(wordValue));
                 } else if (directive == "text" || directive == "code")
                 {
-                    std::cerr << "Text/code section directives are not supported yet." << std::endl;
+                    std::cerr << "Text/code section directives are not supported yet" << std::endl;
                     return {};
                 } else if (directive == "data")
                 {
@@ -73,16 +72,17 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
                     {
                         std::istringstream dataIss(dataValue);
                         word dataByte = 0;
+
                         dataIss >> std::hex >> dataByte;
-                        result.push_back((byte) dataByte);
+                        result.push_back(static_cast<byte>(dataByte));
                     }
                 } else if (directive == "asciiz" || directive == "asciz")
                 {
                     std::string string;
                     lineIss >> string;
 
-                    for (char c: string) result.push_back((byte) c);
-                    result.push_back((byte) 0);
+                    for (char c: string) result.push_back(static_cast<byte>(c));
+                    result.push_back(static_cast<byte>(0));
                 } else if (directive == "equ")
                 {
                     std::string symbol;
@@ -95,12 +95,27 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
                     word valueValue = 0;
                     valueIss >> std::hex >> valueValue;
 
-                    std::cout << "Symbol: " << symbol << " = " << valueValue << std::endl;
-                } else if (directive == "ifdef" || directive == "ifndef" || directive == "else" ||
-                           directive == "endif")
+                    symbols[symbol] = valueValue;
+                } else if (directive == "ifdef")
                 {
-                    std::cerr << "Conditional assembly is not supported yet." << std::endl;
-                    return {};
+                    std::string symbol;
+                    lineIss >> symbol;
+
+                    conditionStack.push_back(symbols.find(symbol) != symbols.end());
+                } else if (directive == "ifndef")
+                {
+                    std::string symbol;
+                    lineIss >> symbol;
+
+                    conditionStack.push_back(symbols.find(symbol) == symbols.end());
+                } else if (directive == "else")
+                {
+                    if (!conditionStack.empty()) conditionStack.back() = !conditionStack.back();
+                    else std::cerr << "Unexpected 'else' without corresponding 'ifdef' or 'ifndef'" << std::endl;
+                } else if (directive == "endif")
+                {
+                    if (!conditionStack.empty()) conditionStack.pop_back();
+                    else std::cerr << "Unexpected 'endif' without corresponding 'ifdef' or 'ifndef'" << std::endl;
                 } else if (directive == "include")
                 {
                     std::string filename;
@@ -123,7 +138,7 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
                     result.insert(result.end(), included.begin(), included.end());
                 } else if (directive == "macro" || directive == "endmacro")
                 {
-                    std::cerr << "Macros are not supported yet." << std::endl;
+                    std::cerr << "Macros are not supported yet" << std::endl;
                     return {};
                 } else
                 {
@@ -136,7 +151,7 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
                 word opcodeValue = 0;
                 opcodeIss >> std::hex >> opcodeValue;
 
-                result.push_back((byte) opcodeValue);
+                result.push_back(static_cast<byte>(opcodeValue));
             }
         }
     }
@@ -144,7 +159,7 @@ std::vector<byte> parseFile(const std::vector<char> &buffer) // NOLINT (misc-no-
     return result;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     if (argc < 2)
     {
@@ -157,12 +172,12 @@ int main(int argc, char **argv)
     CPU cpu = CPU(memory);
 
     std::cout << "Done." << std::endl;
-
     std::cout << "Loading ROM... " << std::flush;
+
     std::ifstream rom(argv[1], std::ios::binary | std::ios::ate);
     if (!rom.is_open())
     {
-        std::cerr << "Failed to open ROM." << std::endl;
+        std::cerr << "Failed to open ROM: " << argv[1] << std::endl;
         return EXIT_FAILURE;
     }
 
