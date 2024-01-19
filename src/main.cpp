@@ -7,10 +7,11 @@
 #include "include/cpu.h"
 #include "include/memory.h"
 
+std::unordered_map<std::string, word> symbols;
+std::vector<bool> conditionStack;
+
 std::vector<byte> parseFile(const std::vector<char> &buffer)
 {
-    std::unordered_map<std::string, word> symbols;
-    std::vector<bool> conditionStack;
     std::vector<byte> result;
 
     std::istringstream iss(buffer.data());
@@ -61,11 +62,8 @@ std::vector<byte> parseFile(const std::vector<char> &buffer)
 
                     result.push_back(static_cast<byte>((wordValue >> 8)));
                     result.push_back(static_cast<byte>(wordValue));
-                } else if (directive == "text" || directive == "code")
-                {
-                    std::cerr << "Text/code section directives are not supported yet" << std::endl;
-                    return {};
-                } else if (directive == "data")
+                } else if (directive == "text" || directive == "code") continue;
+                else if (directive == "data")
                 {
                     std::string dataValue;
                     while (lineIss >> dataValue)
@@ -136,10 +134,6 @@ std::vector<byte> parseFile(const std::vector<char> &buffer)
 
                     std::vector<byte> included = parseFile(includeBuffer);
                     result.insert(result.end(), included.begin(), included.end());
-                } else if (directive == "macro" || directive == "endmacro")
-                {
-                    std::cerr << "Macros are not supported yet" << std::endl;
-                    return {};
                 } else
                 {
                     std::cerr << "Unknown directive: " << directive << std::endl;
